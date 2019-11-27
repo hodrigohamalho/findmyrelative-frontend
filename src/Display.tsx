@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 import {
   PageSection,
@@ -6,15 +6,14 @@ import {
   GridItem,
   Card,
   CardHeader,
-  CardBody,
-} from '@patternfly/react-core';
+  CardBody
+} from "@patternfly/react-core";
 
 interface VictimDetailProps {
   data: any;
 }
 
 const VictimDetail: React.FC<VictimDetailProps> = props => {
-  console.log(props.data);
   return (
     <Card>
       <CardHeader>{props.data.victimName}</CardHeader>
@@ -44,33 +43,28 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
 
 interface DisplayListProps {
   isReady: boolean;
+  responseOk: boolean;
   dataArray: any;
 }
 
 const DisplayList: React.FC<DisplayListProps> = props => {
+  let content = props.dataArray.map((val: any, key: number) => (
+    <li key={key}>
+      <VictimDetail data={val.map}></VictimDetail>
+    </li>
+  ));
+  if (props.dataArray.length === 0) {
+    content = <p>Not data available.</p>;
+  }
   if (!props.isReady) {
-    return (
-      <PageSection>
-        <p>Loading...</p>
-      </PageSection>
-    );
-  } else if (props.dataArray.length === 0)
-    return (
-      <PageSection>
-        <p>Not data available.</p>
-      </PageSection>
-    );
+    content = <p>Loading...</p>;
+  }
+  if (!props.responseOk) {
+    content = <p>503 service unavailable.</p>;
+  }
   return (
     <PageSection>
-      <ul>
-        {props.dataArray.map((val: any, key: number) => {
-          return (
-            <li key={key}>
-              <VictimDetail data={val.map}></VictimDetail>
-            </li>
-          );
-        })}
-      </ul>
+      <ul>{content}</ul>
     </PageSection>
   );
 };
