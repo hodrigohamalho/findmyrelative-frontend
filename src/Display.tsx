@@ -1,23 +1,45 @@
 import React from 'react';
 
+import {
+  PageSection,
+  Grid,
+  GridItem,
+  Card,
+  CardHeader,
+  CardBody,
+} from '@patternfly/react-core';
+
 interface VictimDetailProps {
   data: any;
 }
 
 const VictimDetail: React.FC<VictimDetailProps> = props => {
-  console.log(props.data.map);
-    return <div className="victim-detail">
-        <ul>
-            <li>Name: {props.data.map.victimName}</li>
-            <li>Status: {props.data.map.status}</li>
-            <li>Latitude: {props.data.map.lat}</li>
-            <li>Longitude: {props.data.map.lon}</li>
-            <li>Needs medical attention: {props.data.map.medicalNeeded}</li>
-            <li>People: {props.data.map.numberOfPeople}</li>
-            <li>Phone: {props.data.map.victimPhoneNumber}</li>
-            <li>Timestamp: {new Date(props.data.map.timeStamp).toDateString()}</li>
-            </ul>
-        </div>;
+  console.log(props.data);
+  return (
+    <Card>
+      <CardHeader>{props.data.victimName}</CardHeader>
+      <CardBody>
+        <Grid>
+          <GridItem span={3}>Status:</GridItem>
+          <GridItem span={9}> {props.data.status} </GridItem>
+
+          <GridItem span={3}>People:</GridItem>
+          <GridItem span={9}> {props.data.numberOfPeople} </GridItem>
+
+          <GridItem span={3}>Phone:</GridItem>
+          <GridItem span={9}> {props.data.victimPhoneNumber} </GridItem>
+
+          <GridItem span={3}>Needs First-Aid:</GridItem>
+          <GridItem span={9}> {props.data.medicalNeeded.toString()} </GridItem>
+
+          <GridItem span={3}>Timestamp:</GridItem>
+          <GridItem span={9}>
+            {new Date(props.data.timeStamp).toDateString()}
+          </GridItem>
+        </Grid>
+      </CardBody>
+    </Card>
+  );
 };
 
 interface DisplayListProps {
@@ -27,18 +49,29 @@ interface DisplayListProps {
 
 const DisplayList: React.FC<DisplayListProps> = props => {
   if (!props.isReady) {
-    return <p>Loading...</p>;
-  }
+    return (
+      <PageSection>
+        <p>Loading...</p>
+      </PageSection>
+    );
+  } else if (props.dataArray.length === 0)
+    return (
+      <PageSection>
+        <p>Not data available.</p>
+      </PageSection>
+    );
   return (
-    <ul>
-      {props.dataArray.map((val: any, key: number) => {
-        return (
-          <li key={key}>
-            <VictimDetail data={val}></VictimDetail>
-          </li>
-        );
-      })}
-    </ul>
+    <PageSection>
+      <ul>
+        {props.dataArray.map((val: any, key: number) => {
+          return (
+            <li key={key}>
+              <VictimDetail data={val.map}></VictimDetail>
+            </li>
+          );
+        })}
+      </ul>
+    </PageSection>
   );
 };
 

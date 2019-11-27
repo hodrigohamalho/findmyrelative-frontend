@@ -1,14 +1,31 @@
 import React, {useState} from 'react';
 
+import '@patternfly/react-core/dist/styles/base.css';
+import {Page, PageHeader} from '@patternfly/react-core';
+
 import SearchData from './types';
 import SearchForm from './Search';
 import DisplayList from './Display';
+
+const logoProps = {
+  href: 'https://erdemo.io',
+  target: '_blank',
+};
+
+const Header = (
+  <PageHeader
+    logo="Find My Relative"
+    logoProps={logoProps}
+    toolbar="Toolbar"
+    avatar=" | Avatar"
+  />
+);
 
 const App: React.FC = () => {
   const [victimList, setVictimList] = useState([]);
   const [isDataReady, setIsDataReady] = useState(true);
 
-  const getDetails = async (data: SearchData) => {
+  const fetchDetails = async (data: SearchData) => {
     setIsDataReady(false);
     const response = await fetch(
       `http://localhost:8080/find/victim/byName/${data.name}`,
@@ -24,11 +41,10 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="App">
-      <header className="App-header"></header>
-      <SearchForm onFormSubmit={getDetails}></SearchForm>
+    <Page header={Header}>
+      <SearchForm onFormSubmit={fetchDetails}></SearchForm>
       <DisplayList isReady={isDataReady} dataArray={victimList}></DisplayList>
-    </div>
+    </Page>
   );
 };
 
