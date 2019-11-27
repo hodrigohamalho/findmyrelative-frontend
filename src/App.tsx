@@ -28,7 +28,7 @@ const App: React.FC = () => {
   const fetchDetails = async (data: SearchData) => {
     setIsDataReady(false);
     const response = await fetch(
-      `http://localhost:8080/find/victim/byName/${data.name}`,
+      process.env.REACT_APP_BACKEND_URL + data.name,
     );
 
     if (response.ok) {
