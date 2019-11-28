@@ -54,7 +54,7 @@ const DisplayList: React.FC<DisplayListProps> = props => {
     </li>
   ));
   if (props.dataArray.length === 0) {
-    content = <p>Not data available.</p>;
+    content = <p>No data available.</p>;
   }
   if (!props.isReady) {
     content = <p>Loading...</p>;

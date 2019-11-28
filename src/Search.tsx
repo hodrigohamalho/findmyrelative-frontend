@@ -1,18 +1,18 @@
-import React, {useState} from 'react';
-import {PageSection, TextInput, Button} from '@patternfly/react-core';
+import React, { useState } from "react";
+import { PageSection, TextInput, Button } from "@patternfly/react-core";
 
-import SearchData from './types';
+import SearchData from "./types";
 
 interface SearchFormProps {
   onFormSubmit: (data: SearchData) => void;
 }
 
 const SearchForm: React.FC<SearchFormProps> = props => {
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const handleNameChange = (value: string) => setName(value);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    props.onFormSubmit({name});
+    props.onFormSubmit({ name });
     // Prevent page reload
     e.preventDefault();
   };
@@ -23,7 +23,7 @@ const SearchForm: React.FC<SearchFormProps> = props => {
         <TextInput
           type="search"
           placeholder="Name"
-          style={{maxWidth: '20em', marginRight: '1em', alignItems: 'center'}}
+          style={{ maxWidth: "20em", marginRight: "1em", alignItems: "center" }}
           isRequired={true}
           value={name}
           onChange={handleNameChange}
