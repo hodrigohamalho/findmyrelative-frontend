@@ -1,10 +1,13 @@
-FROM node:10
+FROM node:12-alpine
 
-COPY . .
+COPY package.json package.json
+COPY src src
+COPY public public
+COPY tsconfig.json tsconfig.json
 
 ENV REACT_APP_BACKEND_URL "http://localhost:8080"
 
-RUN npm install
+RUN npm install --silent
 
 RUN npm run build
 
