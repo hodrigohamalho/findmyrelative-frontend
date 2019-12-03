@@ -28,6 +28,10 @@ const App: React.FC = () => {
 
   const fetchDetails = async (data: SearchData) => {
     setIsDataReady(false);
+    console.log(
+      "sending request to: ",
+      process.env.REACT_APP_BACKEND_URL + `/find/victim/byName/${data.name}`
+    );
     const response = await fetch(
       process.env.REACT_APP_BACKEND_URL + `/find/victim/byName/${data.name}`
     );
