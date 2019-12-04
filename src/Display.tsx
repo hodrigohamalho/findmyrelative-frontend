@@ -23,7 +23,7 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
   )
     .then(response => response.json())
     .then(jsonData => {
-      if (jsonData.features.length > 0) {
+      if (jsonData.features.length) {
         setAddress(jsonData.features[0].place_name);
       }
     });
