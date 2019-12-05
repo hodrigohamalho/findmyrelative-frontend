@@ -15,7 +15,7 @@ interface VictimDetailProps {
 
 const VictimDetail: React.FC<VictimDetailProps> = props => {
   const [address, setAddress] = useState("");
-  const host = `https://api.mapbox.com/geocoding/v5/mapbox.places/${props.data.lat},${props.data.lon}.json?`;
+  const host = `https://api.mapbox.com/geocoding/v5/mapbox.places/${props.data.lon},${props.data.lat}.json?`;
   fetch(
     host +
       new URLSearchParams({
