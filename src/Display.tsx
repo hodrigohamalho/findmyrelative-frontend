@@ -9,6 +9,7 @@ import {
   CardBody
 } from "@patternfly/react-core";
 import mapboxgl from "mapbox-gl";
+import marker from "./icons/marker-red.png";
 
 interface MapDisplayProps {
   position: any;
@@ -21,7 +22,37 @@ const MapDisplay: React.FC<MapDisplayProps> = props => {
       container: "map",
       style: "mapbox://styles/mapbox/streets-v11",
       center: [props.position.lon, props.position.lat],
-      zoom: 10
+      zoom: 13
+    });
+    map.on("load", () => {
+      map.loadImage(marker, (err: Error, image: HTMLImageElement) => {
+        if (err) throw err;
+        map.addImage("marker", image);
+        map.addLayer({
+          id: "points",
+          type: "symbol",
+          source: {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [
+                {
+                  type: "Feature",
+                  properties: {},
+                  geometry: {
+                    type: "Point",
+                    coordinates: [props.position.lon, props.position.lat]
+                  }
+                }
+              ]
+            }
+          },
+          layout: {
+            "icon-image": "marker",
+            "icon-size": 0.15
+          }
+        });
+      });
     });
   });
   return <div id={"map"} style={{ maxWidth: "500px", height: "400px" }}></div>;
