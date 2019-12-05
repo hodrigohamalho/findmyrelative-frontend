@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   PageSection,
@@ -8,6 +8,24 @@ import {
   CardHeader,
   CardBody
 } from "@patternfly/react-core";
+import mapboxgl from "mapbox-gl";
+
+interface MapDisplayProps {
+  position: any;
+}
+
+const MapDisplay: React.FC<MapDisplayProps> = props => {
+  useEffect(() => {
+    mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN || "";
+    const map = new mapboxgl.Map({
+      container: "map",
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [props.position.lon, props.position.lat],
+      zoom: 10
+    });
+  });
+  return <div id={"map"} style={{ maxWidth: "500px", height: "400px" }}></div>;
+};
 
 interface VictimDetailProps {
   data: any;
@@ -34,6 +52,12 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
           <GridItem span={3}>Timestamp:</GridItem>
           <GridItem span={9}>
             {new Date(props.data.timeStamp).toDateString()}
+          </GridItem>
+
+          <GridItem span={12}>
+            <MapDisplay
+              position={{ lat: props.data.lat, lon: props.data.lon }}
+            ></MapDisplay>
           </GridItem>
         </Grid>
       </CardBody>
