@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   PageSection,
@@ -14,6 +14,20 @@ interface VictimDetailProps {
 }
 
 const VictimDetail: React.FC<VictimDetailProps> = props => {
+  const [address, setAddress] = useState("");
+  const host = `https://api.mapbox.com/geocoding/v5/mapbox.places/${props.data.lon},${props.data.lat}.json?`;
+  fetch(
+    host +
+      new URLSearchParams({
+        access_token: process.env.REACT_APP_MAPBOX_TOKEN || ""
+      })
+  )
+    .then(response => response.json())
+    .then(jsonData => {
+      if (jsonData.features.length) {
+        setAddress(jsonData.features[0].place_name);
+      }
+    });
   return (
     <Card>
       <CardHeader>{props.data.victimName}</CardHeader>
@@ -21,6 +35,9 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
         <Grid>
           <GridItem span={3}>Status:</GridItem>
           <GridItem span={9}> {props.data.status} </GridItem>
+
+          <GridItem span={3}>Location:</GridItem>
+          <GridItem span={9}> {address} </GridItem>
 
           <GridItem span={3}>People:</GridItem>
           <GridItem span={9}> {props.data.numberOfPeople} </GridItem>
