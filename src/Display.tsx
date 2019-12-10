@@ -9,6 +9,25 @@ import {
   CardBody
 } from "@patternfly/react-core";
 
+interface ShelterDetailProps {
+  id: string;
+}
+const ShelterDetail: React.FC<ShelterDetailProps> = props => {
+  const [shelterName, setShelterName] = useState("");
+
+  fetch(process.env.REACT_APP_BACKEND_URL + `/find/shelter/${props.id}`)
+    .then(response => response.json())
+    .then(jsonData => {
+      setShelterName(jsonData.map.shelter.map.name);
+    });
+  return (
+    <>
+      <GridItem span={3}>Designated Shelter: </GridItem>
+      <GridItem span={9}>{shelterName}</GridItem>
+    </>
+  );
+};
+
 interface VictimDetailProps {
   data: any;
 }
@@ -52,6 +71,9 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
           <GridItem span={9}>
             {new Date(props.data.timeStamp).toDateString()}
           </GridItem>
+          {props.data.status !== "REPORTED" && (
+            <ShelterDetail id={props.data.id}></ShelterDetail>
+          )}
         </Grid>
       </CardBody>
     </Card>
