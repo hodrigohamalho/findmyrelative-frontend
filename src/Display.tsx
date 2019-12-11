@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
 
 import {
+  Alert,
   PageSection,
   Grid,
   GridItem,
   Card,
   CardHeader,
-  CardBody
+  CardBody,
+  Title
 } from "@patternfly/react-core";
 import mapboxgl from "mapbox-gl";
 import marker from "./icons/marker-red.png";
@@ -97,7 +99,11 @@ interface VictimDetailProps {
 const VictimDetail: React.FC<VictimDetailProps> = props => {
   return (
     <Card>
-      <CardHeader>{props.data.victimName}</CardHeader>
+      <CardHeader>
+        <Title headingLevel="h2" size="3xl">
+          {props.data.victimName}
+        </Title>
+      </CardHeader>
       <CardBody>
         <Grid>
           <GridItem span={3}>Status:</GridItem>
@@ -149,7 +155,13 @@ const DisplayList: React.FC<DisplayListProps> = props => {
     content = <p>Loading...</p>;
   }
   if (!props.responseOk) {
-    content = <p>503 service unavailable.</p>;
+    content = (
+      <Alert
+        variant="danger"
+        isInline
+        title="Error: Emergency Response services unreachable"
+      />
+    );
   }
   return (
     <PageSection>
