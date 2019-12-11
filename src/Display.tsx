@@ -3,8 +3,11 @@ import React, { useEffect } from "react";
 import {
   Alert,
   PageSection,
-  Grid,
-  GridItem,
+  Split,
+  SplitItem,
+  Flex,
+  FlexItem,
+  FlexModifiers,
   Card,
   CardHeader,
   CardBody,
@@ -59,7 +62,7 @@ const MapDisplay: React.FC<MapDisplayProps> = props => {
       container: "map",
       style: "mapbox://styles/mapbox/streets-v11",
       center: [props.position.lon, props.position.lat],
-      zoom: 12
+      zoom: 10
     });
     map.on("load", () => {
       map.loadImage(marker, (err: Error, image: HTMLImageElement) => {
@@ -89,7 +92,7 @@ const MapDisplay: React.FC<MapDisplayProps> = props => {
       }
     });
   });
-  return <div id={"map"} style={{ maxWidth: "500px", height: "400px" }}></div>;
+  return <div id={"map"} style={{ width: "500px", height: "400px" }}></div>;
 };
 
 interface VictimDetailProps {
@@ -98,39 +101,40 @@ interface VictimDetailProps {
 
 const VictimDetail: React.FC<VictimDetailProps> = props => {
   return (
-    <Card>
+    <Card isHoverable>
       <CardHeader>
         <Title headingLevel="h2" size="3xl">
           {props.data.victimName}
         </Title>
       </CardHeader>
       <CardBody>
-        <Grid>
-          <GridItem span={3}>Status:</GridItem>
-          <GridItem span={9}> {props.data.status} </GridItem>
-
-          <GridItem span={3}>People:</GridItem>
-          <GridItem span={9}> {props.data.numberOfPeople} </GridItem>
-
-          <GridItem span={3}>Phone:</GridItem>
-          <GridItem span={9}> {props.data.victimPhoneNumber} </GridItem>
-
-          <GridItem span={3}>Needs First-Aid:</GridItem>
-          <GridItem span={9}> {props.data.medicalNeeded.toString()} </GridItem>
-
-          <GridItem span={3}>Timestamp:</GridItem>
-          <GridItem span={9}>
-            {new Date(props.data.timeStamp).toDateString()}
-          </GridItem>
-
-          <GridItem span={12}>
+        <Split gutter="md">
+          <SplitItem>
             <MapDisplay
               id={props.data.id}
               status={props.data.status}
               position={{ lat: props.data.lat, lon: props.data.lon }}
-            ></MapDisplay>
-          </GridItem>
-        </Grid>
+            />
+          </SplitItem>
+          <SplitItem>
+            <Flex>
+              <Flex breakpointMods={[{ modifier: FlexModifiers.column }]}>
+                <FlexItem>Status:</FlexItem>
+                <FlexItem>People:</FlexItem>
+                <FlexItem>Phone:</FlexItem>
+                <FlexItem>Needs First Aid:</FlexItem>
+                <FlexItem>Timestamp:</FlexItem>
+              </Flex>
+              <Flex breakpointMods={[{ modifier: FlexModifiers.column }]}>
+                <FlexItem>{props.data.status}</FlexItem>
+                <FlexItem>{props.data.numberOfPeople}</FlexItem>
+                <FlexItem>{props.data.victimPhoneNumber}</FlexItem>
+                <FlexItem>{String(props.data.medicalNeeded)}</FlexItem>
+                <FlexItem>{props.data.timeStamp}</FlexItem>
+              </Flex>
+            </Flex>
+          </SplitItem>
+        </Split>
       </CardBody>
     </Card>
   );
