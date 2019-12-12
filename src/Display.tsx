@@ -158,7 +158,11 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
                 <FlexItem>Timestamp:</FlexItem>
               </Flex>
               <Flex breakpointMods={[{ modifier: FlexModifiers.column }]}>
-                <FlexItem>{props.data.status}</FlexItem>
+                <FlexItem>
+                  {props.data.status === "RESCUED"
+                    ? "RESCUED, victim is at shelter"
+                    : props.data.status}
+                </FlexItem>
                 <FlexItem>{props.data.numberOfPeople}</FlexItem>
                 <FlexItem>{props.data.victimPhoneNumber}</FlexItem>
                 <FlexItem>{String(props.data.medicalNeeded)}</FlexItem>
