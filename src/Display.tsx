@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Alert,
@@ -95,11 +95,39 @@ const MapDisplay: React.FC<MapDisplayProps> = props => {
   return <div id={"map"} style={{ width: "500px", height: "400px" }}></div>;
 };
 
+interface ShelterDetailProps {
+  id: string;
+}
+
+const ShelterDetail: React.FC<ShelterDetailProps> = props => {
+  const [shelterName, setShelterName] = useState("");
+  fetch(process.env.REACT_APP_BACKEND_URL + `/find/shelter/${props.id}`)
+    .then(response => response.json())
+    .then(jsonData => {
+      setShelterName(jsonData.map.shelter.map.name);
+    });
+  return <FlexItem>{shelterName}</FlexItem>;
+};
+
 interface VictimDetailProps {
   data: any;
 }
 
 const VictimDetail: React.FC<VictimDetailProps> = props => {
+  const [address, setAddress] = useState("");
+  const host = `https://api.mapbox.com/geocoding/v5/mapbox.places/${props.data.lon},${props.data.lat}.json?`;
+  fetch(
+    host +
+      new URLSearchParams({
+        access_token: process.env.REACT_APP_MAPBOX_TOKEN || ""
+      })
+  )
+    .then(response => response.json())
+    .then(jsonData => {
+      if (jsonData.features.length) {
+        setAddress(jsonData.features[0].place_name);
+      }
+    });
   return (
     <Card isHoverable>
       <CardHeader>
@@ -123,6 +151,10 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
                 <FlexItem>People:</FlexItem>
                 <FlexItem>Phone:</FlexItem>
                 <FlexItem>Needs First Aid:</FlexItem>
+                <FlexItem>Location:</FlexItem>
+                {props.data.status !== "REPORTED" && (
+                  <FlexItem>Shelter:</FlexItem>
+                )}
                 <FlexItem>Timestamp:</FlexItem>
               </Flex>
               <Flex breakpointMods={[{ modifier: FlexModifiers.column }]}>
@@ -130,7 +162,13 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
                 <FlexItem>{props.data.numberOfPeople}</FlexItem>
                 <FlexItem>{props.data.victimPhoneNumber}</FlexItem>
                 <FlexItem>{String(props.data.medicalNeeded)}</FlexItem>
-                <FlexItem>{props.data.timeStamp}</FlexItem>
+                <FlexItem>{address}</FlexItem>
+                {props.data.status !== "REPORTED" && (
+                  <ShelterDetail id={props.data.id}>Shelter:</ShelterDetail>
+                )}
+                <FlexItem>
+                  {new Date(props.data.timeStamp).toDateString()}
+                </FlexItem>
               </Flex>
             </Flex>
           </SplitItem>
