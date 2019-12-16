@@ -1,12 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
+  Alert,
   PageSection,
-  Grid,
-  GridItem,
+  Split,
+  SplitItem,
+  Flex,
+  FlexItem,
+  FlexModifiers,
   Card,
   CardHeader,
-  CardBody
+  CardBody,
+  Title
 } from "@patternfly/react-core";
 import mapboxgl from "mapbox-gl";
 import marker from "./icons/marker-red.png";
@@ -57,7 +62,7 @@ const MapDisplay: React.FC<MapDisplayProps> = props => {
       container: "map",
       style: "mapbox://styles/mapbox/streets-v11",
       center: [props.position.lon, props.position.lat],
-      zoom: 12
+      zoom: 10
     });
     map.on("load", () => {
       map.loadImage(marker, (err: Error, image: HTMLImageElement) => {
@@ -87,7 +92,21 @@ const MapDisplay: React.FC<MapDisplayProps> = props => {
       }
     });
   });
-  return <div id={"map"} style={{ maxWidth: "500px", height: "400px" }}></div>;
+  return <div id={"map"} style={{ width: "500px", height: "400px" }}></div>;
+};
+
+interface ShelterDetailProps {
+  id: string;
+}
+
+const ShelterDetail: React.FC<ShelterDetailProps> = props => {
+  const [shelterName, setShelterName] = useState("");
+  fetch(process.env.REACT_APP_BACKEND_URL + `/find/shelter/${props.id}`)
+    .then(response => response.json())
+    .then(jsonData => {
+      setShelterName(jsonData.map.shelter.map.name);
+    });
+  return <FlexItem>{shelterName}</FlexItem>;
 };
 
 interface VictimDetailProps {
@@ -95,36 +114,69 @@ interface VictimDetailProps {
 }
 
 const VictimDetail: React.FC<VictimDetailProps> = props => {
+  const [address, setAddress] = useState("");
+  const host = `https://api.mapbox.com/geocoding/v5/mapbox.places/${props.data.lon},${props.data.lat}.json?`;
+  fetch(
+    host +
+      new URLSearchParams({
+        access_token: process.env.REACT_APP_MAPBOX_TOKEN || ""
+      })
+  )
+    .then(response => response.json())
+    .then(jsonData => {
+      if (jsonData.features.length) {
+        setAddress(jsonData.features[0].place_name);
+      }
+    });
   return (
-    <Card>
-      <CardHeader>{props.data.victimName}</CardHeader>
+    <Card isHoverable>
+      <CardHeader>
+        <Title headingLevel="h2" size="3xl">
+          {props.data.victimName}
+        </Title>
+      </CardHeader>
       <CardBody>
-        <Grid>
-          <GridItem span={3}>Status:</GridItem>
-          <GridItem span={9}> {props.data.status} </GridItem>
-
-          <GridItem span={3}>People:</GridItem>
-          <GridItem span={9}> {props.data.numberOfPeople} </GridItem>
-
-          <GridItem span={3}>Phone:</GridItem>
-          <GridItem span={9}> {props.data.victimPhoneNumber} </GridItem>
-
-          <GridItem span={3}>Needs First-Aid:</GridItem>
-          <GridItem span={9}> {props.data.medicalNeeded.toString()} </GridItem>
-
-          <GridItem span={3}>Timestamp:</GridItem>
-          <GridItem span={9}>
-            {new Date(props.data.timeStamp).toDateString()}
-          </GridItem>
-
-          <GridItem span={12}>
+        <Split gutter="md">
+          <SplitItem>
             <MapDisplay
               id={props.data.id}
               status={props.data.status}
               position={{ lat: props.data.lat, lon: props.data.lon }}
-            ></MapDisplay>
-          </GridItem>
-        </Grid>
+            />
+          </SplitItem>
+          <SplitItem>
+            <Flex>
+              <Flex breakpointMods={[{ modifier: FlexModifiers.column }]}>
+                <FlexItem>Status:</FlexItem>
+                <FlexItem>People:</FlexItem>
+                <FlexItem>Phone:</FlexItem>
+                <FlexItem>Needs First Aid:</FlexItem>
+                <FlexItem>Location:</FlexItem>
+                {props.data.status !== "REPORTED" && (
+                  <FlexItem>Shelter:</FlexItem>
+                )}
+                <FlexItem>Timestamp:</FlexItem>
+              </Flex>
+              <Flex breakpointMods={[{ modifier: FlexModifiers.column }]}>
+                <FlexItem>
+                  {props.data.status === "RESCUED"
+                    ? "RESCUED, victim is at shelter"
+                    : props.data.status}
+                </FlexItem>
+                <FlexItem>{props.data.numberOfPeople}</FlexItem>
+                <FlexItem>{props.data.victimPhoneNumber}</FlexItem>
+                <FlexItem>{String(props.data.medicalNeeded)}</FlexItem>
+                <FlexItem>{address}</FlexItem>
+                {props.data.status !== "REPORTED" && (
+                  <ShelterDetail id={props.data.id}>Shelter:</ShelterDetail>
+                )}
+                <FlexItem>
+                  {new Date(props.data.timeStamp).toDateString()}
+                </FlexItem>
+              </Flex>
+            </Flex>
+          </SplitItem>
+        </Split>
       </CardBody>
     </Card>
   );
@@ -149,7 +201,13 @@ const DisplayList: React.FC<DisplayListProps> = props => {
     content = <p>Loading...</p>;
   }
   if (!props.responseOk) {
-    content = <p>503 service unavailable.</p>;
+    content = (
+      <Alert
+        variant="danger"
+        isInline
+        title="Error: Emergency Response services unreachable"
+      />
+    );
   }
   return (
     <PageSection>
