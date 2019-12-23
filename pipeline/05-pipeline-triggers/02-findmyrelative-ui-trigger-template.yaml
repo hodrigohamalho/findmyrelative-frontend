@@ -1,0 +1,58 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: findmyrelative-ui-cicd-triggertemplate
+spec:
+  params:
+  - name: gitrevision
+    description: The git revision
+    default: master
+  - name: gitrepositoryurl
+    description: The git repository url
+  - name: namespace
+    description: The namespace to create the resources
+  - name: gitrepositoryname
+    description: The name of the deployment to be created / patched
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineResource
+    metadata:
+      name: findmyrelative-ui-git-repo-$(uid)
+      namespace: $(params.namespace)
+    spec:
+      type: git
+      params:
+      - name: revision
+        value: $(params.gitrevision)
+      - name: url
+        value: $(params.gitrepositoryurl)
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineResource
+    metadata:
+      name: findmyrealtive-ui-image-$(uid)
+      namespace: $(params.namespace)
+    spec:
+      type: image
+      params:
+      - name: url
+        value: image-registry.openshift-image-registry.svc:5000/find-my-relative/frontend:latest
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineRun
+    metadata:
+      name: findmyrelative-ui-pipelinerun-$(uid)
+      namespace: $(params.namespace)
+    spec:
+      pipelineRef:
+        name: findmyrelative-ui-pipeline
+      serviceAccount: 'pipeline'
+      resources:
+      - name: source-git-repo
+        resourceRef:
+          name: findmyrelative-ui-git-repo-$(uid)
+      - name: image-resource-name
+        resourceRef:
+          name: findmyrealtive-ui-image-$(uid)
+      params:
+      - name: deployment-name
+        value: frontend
+
