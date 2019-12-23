@@ -109,6 +109,25 @@ const ShelterDetail: React.FC<ShelterDetailProps> = props => {
   return <FlexItem>{shelterName}</FlexItem>;
 };
 
+interface ShelterDetailProps {
+  id: string;
+}
+const ShelterDetail: React.FC<ShelterDetailProps> = props => {
+  const [shelterName, setShelterName] = useState("");
+
+  fetch(process.env.REACT_APP_BACKEND_URL + `/find/shelter/${props.id}`)
+    .then(response => response.json())
+    .then(jsonData => {
+      setShelterName(jsonData.map.shelter.map.name);
+    });
+  return (
+    <>
+      <GridItem span={3}>Designated Shelter: </GridItem>
+      <GridItem span={9}>{shelterName}</GridItem>
+    </>
+  );
+};
+
 interface VictimDetailProps {
   data: any;
 }
