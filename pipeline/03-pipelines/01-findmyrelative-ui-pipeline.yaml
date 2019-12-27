@@ -8,10 +8,6 @@ spec:
     type: git
   - name: image-resource-name
     type: image
-  params:
-  - name: deployment-name
-    type: string
-    description: name of the deployment to be patched
   tasks:
   - name: build-image
     taskRef:
@@ -38,6 +34,6 @@ spec:
         resource: image-resource-name
     params:
     - name: deployment-name
-      value: $(params.deployment-name)
+      value: frontend
     runAfter:
     - build-image

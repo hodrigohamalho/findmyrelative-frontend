@@ -52,7 +52,5 @@ spec:
       - name: image-resource-name
         resourceRef:
           name: findmyrealtive-ui-image-$(uid)
-      params:
-      - name: deployment-name
-        value: frontend
+
 

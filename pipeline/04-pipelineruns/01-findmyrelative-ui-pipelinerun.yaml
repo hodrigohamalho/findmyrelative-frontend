@@ -12,6 +12,3 @@ spec:
   - name: image-resource-name
     resourceRef:
       name: findmyrelative-ui-image
-  params:
-  - name: deployment-name
-    value: frontend
