@@ -21,4 +21,7 @@ spec:
           ports:
             - containerPort: 8080
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: frontend-env
 

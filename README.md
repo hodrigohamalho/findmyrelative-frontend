@@ -16,11 +16,15 @@ The backend service can be found [here](https://github.com/Emergency-Response-De
 
 * You can deploy using Dockerfile on OpenShift Webconsole or run the following command.
   
-  ```
-  oc new-app --name frontend --strategy docker https://github.com/Emergency-Response-Demo/find-service
+  ```bash
+  oc new-app --name frontend \
+     --strategy docker \
+     -e REACT_APP_BACKEND_URL=<backend_url> \
+     -e REACT_APP_MAPBOX_TOKEN=<mapbox_token> \
+     https://github.com/Emergency-Response-Demo/findmyrelative-frontend
   ```
   
-* You need to pass the backend url as `REACT_APP_BACKEND_URL` and Mapbox access token as `REACT_APP_MAPBOX_TOKEN` as Environment variables. You can get a Mapbox token [here](https://account.mapbox.com/). 
+* Pass the backend url as `REACT_APP_BACKEND_URL` and Mapbox access token as `REACT_APP_MAPBOX_TOKEN` as Environment variables. You can get a Mapbox token [here](https://account.mapbox.com/).
 
 ## Deploying using Tekton Pipeline
 
@@ -58,6 +62,11 @@ The backend service can be found [here](https://github.com/Emergency-Response-De
     
     6. Install the Pipeline Resources,Task and Pipeline.
     
+        1. Create a ConfigMap for providing the `REACT_APP_BACKEND_URL` and `REACT_APP_MAPBOX_TOKEN` environment variables, fill the `k8s/env-config-map.yaml` file with the values and apply it:
+        ```bash
+        oc apply -f k8s/env-config-map.yaml
+        ```
+
         1. Pipeline - There are two task in pipeline. First is Buildah which is a Cluster task and the other is a custom task which we are going to install in next step.
         
             Install pipeline using below command - 
