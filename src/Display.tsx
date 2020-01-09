@@ -1,31 +1,29 @@
 import React, { useState } from "react";
 
 import {
+  Alert,
   PageSection,
-  Grid,
-  GridItem,
+  Flex,
+  FlexItem,
+  FlexModifiers,
   Card,
   CardHeader,
-  CardBody
+  CardBody,
+  Title
 } from "@patternfly/react-core";
 
 interface ShelterDetailProps {
   id: string;
 }
+
 const ShelterDetail: React.FC<ShelterDetailProps> = props => {
   const [shelterName, setShelterName] = useState("");
-
   fetch(process.env.REACT_APP_BACKEND_URL + `/find/shelter/${props.id}`)
     .then(response => response.json())
     .then(jsonData => {
       setShelterName(jsonData.map.shelter.map.name);
     });
-  return (
-    <>
-      <GridItem span={3}>Designated Shelter: </GridItem>
-      <GridItem span={9}>{shelterName}</GridItem>
-    </>
-  );
+  return <FlexItem>{shelterName}</FlexItem>;
 };
 
 interface VictimDetailProps {
@@ -48,33 +46,39 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
       }
     });
   return (
-    <Card>
-      <CardHeader>{props.data.victimName}</CardHeader>
+    <Card isHoverable>
+      <CardHeader>
+        <Title headingLevel="h2" size="3xl">
+          {props.data.victimName}
+        </Title>
+      </CardHeader>
       <CardBody>
-        <Grid>
-          <GridItem span={3}>Status:</GridItem>
-          <GridItem span={9}> {props.data.status} </GridItem>
-
-          <GridItem span={3}>Location:</GridItem>
-          <GridItem span={9}> {address} </GridItem>
-
-          <GridItem span={3}>People:</GridItem>
-          <GridItem span={9}> {props.data.numberOfPeople} </GridItem>
-
-          <GridItem span={3}>Phone:</GridItem>
-          <GridItem span={9}> {props.data.victimPhoneNumber} </GridItem>
-
-          <GridItem span={3}>Needs First-Aid:</GridItem>
-          <GridItem span={9}> {props.data.medicalNeeded.toString()} </GridItem>
-
-          <GridItem span={3}>Timestamp:</GridItem>
-          <GridItem span={9}>
-            {new Date(props.data.timeStamp).toDateString()}
-          </GridItem>
-          {props.data.status !== "REPORTED" && (
-            <ShelterDetail id={props.data.id}></ShelterDetail>
-          )}
-        </Grid>
+        <Flex>
+          <Flex breakpointMods={[{ modifier: FlexModifiers.column }]}>
+            <FlexItem>Status:</FlexItem>
+            <FlexItem>People:</FlexItem>
+            <FlexItem>Phone:</FlexItem>
+            <FlexItem>Needs First Aid:</FlexItem>
+            <FlexItem>Location:</FlexItem>
+            {props.data.status !== "REPORTED" && <FlexItem>Shelter:</FlexItem>}
+            <FlexItem>Timestamp:</FlexItem>
+          </Flex>
+          <Flex breakpointMods={[{ modifier: FlexModifiers.column }]}>
+            <FlexItem>
+              {props.data.status === "RESCUED"
+                ? "RESCUED, victim is at shelter"
+                : props.data.status}
+            </FlexItem>
+            <FlexItem>{props.data.numberOfPeople}</FlexItem>
+            <FlexItem>{props.data.victimPhoneNumber}</FlexItem>
+            <FlexItem>{String(props.data.medicalNeeded)}</FlexItem>
+            <FlexItem>{address}</FlexItem>
+            {props.data.status !== "REPORTED" && (
+              <ShelterDetail id={props.data.id}>Shelter:</ShelterDetail>
+            )}
+            <FlexItem>{new Date(props.data.timeStamp).toDateString()}</FlexItem>
+          </Flex>
+        </Flex>
       </CardBody>
     </Card>
   );
@@ -99,7 +103,13 @@ const DisplayList: React.FC<DisplayListProps> = props => {
     content = <p>Loading...</p>;
   }
   if (!props.responseOk) {
-    content = <p>503 service unavailable.</p>;
+    content = (
+      <Alert
+        variant="danger"
+        isInline
+        title="Error: Emergency Response services unreachable"
+      />
+    );
   }
   return (
     <PageSection>
