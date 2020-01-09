@@ -11,6 +11,7 @@ import {
   Card,
   CardHeader,
   CardBody,
+  GridItem,
   Title
 } from "@patternfly/react-core";
 import mapboxgl from "mapbox-gl";
@@ -99,19 +100,6 @@ interface ShelterDetailProps {
   id: string;
 }
 
-const ShelterDetail: React.FC<ShelterDetailProps> = props => {
-  const [shelterName, setShelterName] = useState("");
-  fetch(process.env.REACT_APP_BACKEND_URL + `/find/shelter/${props.id}`)
-    .then(response => response.json())
-    .then(jsonData => {
-      setShelterName(jsonData.map.shelter.map.name);
-    });
-  return <FlexItem>{shelterName}</FlexItem>;
-};
-
-interface ShelterDetailProps {
-  id: string;
-}
 const ShelterDetail: React.FC<ShelterDetailProps> = props => {
   const [shelterName, setShelterName] = useState("");
 
@@ -203,7 +191,7 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
 
 interface DisplayListProps {
   isReady: boolean;
-  responseOk: boolean;
+  responseOk: any;
   dataArray: any;
 }
 
@@ -225,6 +213,25 @@ const DisplayList: React.FC<DisplayListProps> = props => {
         variant="danger"
         isInline
         title="Error: Emergency Response services unreachable"
+      />
+    );
+  }
+
+  if (props.responseOk == "FindMyRelative service") {
+    content = (
+      <Alert
+        variant="danger"
+        isInline
+        title="Error: FindMyRelative service is temporarily down. Please try after sometime!"
+      />
+    );
+  }
+  if (props.responseOk == "EmergencyResponseDemo service") {
+    content = (
+      <Alert
+        variant="danger"
+        isInline
+        title="Error: EmergencyResponseDemo service is temporarily down. Please try after sometime!"
       />
     );
   }
