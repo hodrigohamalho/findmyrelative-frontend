@@ -62,9 +62,11 @@ The backend service can be found [here](https://github.com/Emergency-Response-De
     
     6. Install the Pipeline Resources,Task and Pipeline.
     
-        1. Create a ConfigMap for providing the `REACT_APP_BACKEND_URL` and `REACT_APP_MAPBOX_TOKEN` environment variables, fill the `k8s/env-config-map.yaml` file with the values and apply it:
+        1. Create a ConfigMap named `frontend-env` for providing the `REACT_APP_BACKEND_URL` and `REACT_APP_MAPBOX_TOKEN` environment variables:
         ```bash
-        oc apply -f k8s/env-config-map.yaml
+         oc create cm frontend-env
+           --from-literal REACT_APP_BACKEND_URL=<find-service-url>
+           --from-literal REACT_APP_MAPBOX_TOKEN=<my-mapbox-token>
         ```
 
         1. Pipeline - There are two task in pipeline. First is Buildah which is a Cluster task and the other is a custom task which we are going to install in next step.
