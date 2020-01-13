@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: frontend-env
-  namespace: find-my-relative
-data:
-  REACT_APP_BACKEND_URL: ""
-  REACT_APP_MAPBOX_TOKEN: ""
-
