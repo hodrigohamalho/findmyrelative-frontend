@@ -1,0 +1,11 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: findmyrelative-ui-cicd-eventlistener
+spec:
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: el-findmyrelative-ui-cicd-listener
+    weight: 100

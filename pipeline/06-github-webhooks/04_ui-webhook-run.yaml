@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: create-findmyrelative-ui-repo-webhook-run
+spec:
+  taskRef:
+    name: create-webhook
+  inputs:
+    params:
+    - name: GitHubOrg
+      value: "<your user name or org name>"
+    - name: GitHubUser
+      value: "<your user name>"
+    - name: GitHubRepo
+      value: "findmyrelative-frontend"
+    - name: GitHubSecretName
+      value: findmyrelative-ui-webhook-secret
+    - name: GitHubAccessTokenKey
+      value: token
+    - name: GitHubSecretStringKey
+      value: secret
+    - name: ExternalDomain
+      value: <event-listener route url>
+  timeout: 1000s
+  serviceAccount: serviceaccount
