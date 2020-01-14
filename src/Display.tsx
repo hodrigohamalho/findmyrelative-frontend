@@ -107,7 +107,12 @@ const ShelterDetail: React.FC<ShelterDetailProps> = props => {
     .then(jsonData => {
       setShelterName(jsonData.map.shelter.map.name);
     });
-  return <FlexItem>{shelterName}</FlexItem>;
+  return (
+    <>
+      <GridItem span={3}>Designated Shelter: </GridItem>
+      <GridItem span={9}>{shelterName}</GridItem>
+    </>
+  );
 };
 
 interface VictimDetailProps {
@@ -237,7 +242,25 @@ const DisplayList: React.FC<DisplayListProps> = props => {
       </li>
     ));
   }
-  
+
+  if (props.responseOk == "FindMyRelative service") {
+    content = (
+      <Alert
+        variant="danger"
+        isInline
+        title="Error: FindMyRelative service is temporarily down. Please try after sometime!"
+      />
+    );
+  }
+  if (props.responseOk == "EmergencyResponseDemo service") {
+    content = (
+      <Alert
+        variant="danger"
+        isInline
+        title="Error: EmergencyResponseDemo service is temporarily down. Please try after sometime!"
+      />
+    );
+  }
   return (
     <PageSection>
       <ul>{content}</ul>
