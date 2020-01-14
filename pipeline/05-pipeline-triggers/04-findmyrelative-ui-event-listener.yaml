@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: findmyrelative-ui-cicd-listener
+spec:
+  serviceAccountName: serviceaccount
+  triggers:
+  - binding:
+      name: findmyrelative-ui-cicd-pipelinebinding
+    template:
+      name: findmyrelative-ui-cicd-triggertemplate
