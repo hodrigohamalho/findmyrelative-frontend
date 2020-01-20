@@ -17,6 +17,7 @@ import {
 import mapboxgl from "mapbox-gl";
 import marker from "./icons/marker-red.png";
 import shelter from "./icons/shelter.png";
+import { getShelterData } from "./mock/mockShelterData";
 
 interface MapDisplayProps {
   position: any;
@@ -77,18 +78,28 @@ const MapDisplay: React.FC<MapDisplayProps> = props => {
         map.loadImage(shelter, (err: Error, image: HTMLImageElement) => {
           if (err) throw err;
           map.addImage("shelter", image);
-          fetch(process.env.REACT_APP_BACKEND_URL + `/find/shelter/${props.id}`)
-            .then(response => response.json())
-            .then(jsonData => {
-              map.addLayer(
-                mapPointLayer(
-                  "shelter",
-                  jsonData.map.shelter.map.lon,
-                  jsonData.map.shelter.map.lat,
-                  2
-                )
-              );
-            });
+
+          if (process.env.REACT_APP_MOCK_API) {
+            const mockShelter = getShelterData(props.id).map.shelter.map;
+            map.addLayer(
+              mapPointLayer("shelter", mockShelter.lon, mockShelter.lat, 2)
+            );
+          } else {
+            fetch(
+              process.env.REACT_APP_BACKEND_URL + `/find/shelter/${props.id}`
+            )
+              .then(response => response.json())
+              .then(jsonData => {
+                map.addLayer(
+                  mapPointLayer(
+                    "shelter",
+                    jsonData.map.shelter.map.lon,
+                    jsonData.map.shelter.map.lat,
+                    2
+                  )
+                );
+              });
+          }
         });
       }
     });
@@ -101,18 +112,20 @@ interface ShelterDetailProps {
 }
 
 const ShelterDetail: React.FC<ShelterDetailProps> = props => {
-  const [shelterName, setShelterName] = useState("");
-  fetch(process.env.REACT_APP_BACKEND_URL + `/find/shelter/${props.id}`)
-    .then(response => response.json())
-    .then(jsonData => {
-      setShelterName(jsonData.map.shelter.map.name);
-    });
-  return (
-    <>
-      <GridItem span={3}>Designated Shelter: </GridItem>
-      <GridItem span={9}>{shelterName}</GridItem>
-    </>
-  );
+  // Calling `setShelterName` before first render will cause infinite loop
+  const initialShelter = process.env.REACT_APP_MOCK_API
+    ? getShelterData(props.id).map.shelter.map.name
+    : "";
+  const [shelterName, setShelterName] = useState(initialShelter);
+
+  if (!initialShelter) {
+    fetch(process.env.REACT_APP_BACKEND_URL + `/find/shelter/${props.id}`)
+      .then(response => response.json())
+      .then(jsonData => {
+        setShelterName(jsonData.map.shelter.map.name);
+      });
+  }
+  return <GridItem span={9}>{shelterName}</GridItem>;
 };
 
 interface VictimDetailProps {
@@ -128,7 +141,6 @@ const status = {
 const VictimDetail: React.FC<VictimDetailProps> = props => {
   const [address, setAddress] = useState("");
   const [neighbourAddress, setNeighbourAddress] = useState("");
-  console.log("longitude ::" + props.data.lon + "latitude: ::" + props.data.lat)
   const host = `https://api.mapbox.com/geocoding/v5/mapbox.places/${props.data.lon},${props.data.lat}.json?`;
   fetch(
     host +
@@ -209,7 +221,7 @@ const VictimDetail: React.FC<VictimDetailProps> = props => {
                 ) : null}
 
                 {props.data.status !== status.reported ? (
-                  <ShelterDetail id={props.data.id}>Shelter:</ShelterDetail>
+                  <ShelterDetail id={props.data.id}></ShelterDetail>
                 ) : null}
                 <FlexItem>
                   {new Date(props.data.timeStamp).toDateString()}
@@ -243,7 +255,7 @@ const DisplayList: React.FC<DisplayListProps> = props => {
     ));
   }
 
-  if (props.responseOk == "FindMyRelative service") {
+  if (props.responseOk === "FindMyRelative service") {
     content = (
       <Alert
         variant="danger"
@@ -252,7 +264,7 @@ const DisplayList: React.FC<DisplayListProps> = props => {
       />
     );
   }
-  if (props.responseOk == "EmergencyResponseDemo service") {
+  if (props.responseOk === "EmergencyResponseDemo service") {
     content = (
       <Alert
         variant="danger"
