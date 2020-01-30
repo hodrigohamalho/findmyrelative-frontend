@@ -2,6 +2,8 @@
 
 React based PWA frontend for the Find My Relative demo application.
 
+![Architecture](/resources/architecture.jpg)
+
 The backend service can be found [here](https://github.com/Emergency-Response-Demo/find-service).
 
 ## Running Locally
