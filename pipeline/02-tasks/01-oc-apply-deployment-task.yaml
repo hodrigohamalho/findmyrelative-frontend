@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
-  name: oc-apply-deployment
+  name: oc-apply-deploymentconfig
 spec:
   inputs:
     resources:
@@ -14,8 +14,8 @@ spec:
       description: The directory in source that contains yaml manifests
       type: string
       default: "k8s"
-    - name: deployment-name
-      description: The name of the deployment patch the image
+    - name: deploymentconfig-name
+      description: The name of the deploymentconfig to patch the image to
       type: string
   steps:
   - name: apply
@@ -32,16 +32,17 @@ spec:
     command: ["/bin/bash", "-c"]
     args:
     - |-
-        oc patch deployment $(inputs.params.deployment-name) \
-           --patch='{
-                     "spec":{
-                             "template":{
-                                         "spec":{
-                                                 "containers":[{
-                                                                "name": "$(inputs.params.deployment-name)",
-                                                                "image":"$(inputs.resources.new-image.url)"
-                                                               }]
-                                                }
-                                        }
-                            }
-                    }'
+        oc patch deploymentconfig $(inputs.params.deploymentconfig-name) \
+         --patch='{
+           "spec":{
+             "template":{
+               "spec":{
+                 "containers":[{
+                   "name": "$(inputs.params.deploymentconfig-name)",
+                   "image":"$(inputs.resources.new-image.url)"
+                 }]
+               }
+             }
+           }
+         }'
+        oc rollout latest deploymentconfig/$(inputs.params.deploymentconfig-name)

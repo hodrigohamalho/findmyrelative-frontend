@@ -23,9 +23,9 @@ spec:
     params:
     - name: TLSVERIFY
       value: "false"
-  - name: create-upate-deployment
+  - name: create-upate-deploymentconfig
     taskRef:
-      name: oc-apply-deployment
+      name: oc-apply-deploymentconfig
     resources:
       inputs:
       - name: k8s-repo
@@ -33,7 +33,7 @@ spec:
       - name: new-image
         resource: image-resource-name
     params:
-    - name: deployment-name
+    - name: deploymentconfig-name
       value: frontend
     runAfter:
     - build-image
