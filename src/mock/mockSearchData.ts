@@ -16,7 +16,8 @@ function generateVictimData(name: string, status: string) {
               lon: "-77.89",
               medicalNeeded: true,
               numberOfPeople: 5,
-              timeStamp: Date.now()
+              timeStamp: Date.now(),
+              address: ""
             }
           }
         ]
