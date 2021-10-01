@@ -64,7 +64,7 @@ export function searchName (name: string): AppThunk {
       }
       dispatch(recieveDetails(true, detailsList))
     } else {
-      fetch(process.env.REACT_APP_BACKEND_URL + `/find/victim/byName/${name}`)
+      fetch(process.env.REACT_APP_BACKEND_URL + `/find/victim/byName/${name}?user_key=${process.env.API_KEY}`)
         .then((response) => response.json())
         .then(
           async (data) => {
