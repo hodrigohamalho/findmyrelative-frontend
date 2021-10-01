@@ -64,7 +64,7 @@ export function searchName (name: string): AppThunk {
       }
       dispatch(recieveDetails(true, detailsList))
     } else {
-      fetch(`http://findservice-user1-er-demo.apps.cluster-2h664.2h664.example.opentlc.com/find/victim/byName/${name}`)
+      fetch(`http://findservice-user1-er-demo.apps.cluster-2h664.2h664.example.opentlc.com/find/victim/byName/${name}?user_key=1e9054e1e51a2795741be4d11157455e`)
         .then((response) => response.json())
         .then(
           async (data) => {
